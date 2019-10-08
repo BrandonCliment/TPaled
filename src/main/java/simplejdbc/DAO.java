@@ -80,7 +80,27 @@ public class DAO {
 	 * @throws DAOException
 	 */
 	public int numberOfOrdersForCustomer(int customerId) throws DAOException {
-		throw new UnsupportedOperationException("Pas encore implémenté");
+		int result = 0;
+
+		String sql = "SELECT COUNT(*) AS NUMBEROFORDERS FROM PURCHASE_ORDER WHERE CUSTOMER_ID = ?";
+		// Syntaxe "try with resources" 
+		// cf. https://stackoverflow.com/questions/22671697/try-try-with-resources-and-connection-statement-and-resultset-closing
+		try (Connection connection = myDataSource.getConnection(); // Ouvrir une connexion
+			PreparedStatement stmt = connection.prepareStatement(sql); // On crée un statement pour exécuter une requête
+                        
+                        
+		) {
+			stmt.setInt(1, customerId);
+                        ResultSet rs = stmt.executeQuery();
+                        rs.next(); // Pas la peine de faire while, il y a 1 seul enregistrement
+			// On récupère le champ NUMBER de l'enregistrement courant
+			result = rs.getInt("NUMBEROFORDERS");
+
+		} catch (SQLException ex) {
+			Logger.getLogger("DAO").log(Level.SEVERE, null, ex);
+			throw new DAOException(ex.getMessage());
+		}
+                return result;
 	}
 
 	/**
